@@ -1,9 +1,16 @@
 import * as d3 from "d3";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import ForceGraph2D from 'react-force-graph-2d';
+import pauseIcon from "/pause-icon.svg";
+import prevIcon from "/prev-icon.svg";
+import nextIcon from "/next-icon.svg";
+import watchIcon from "/watch-icon.svg";
+import runIcon from "/run-icon.svg";
+import backgroundImage from "/web-networkbackground.png";
 
 function App() {
     const data = {
-        "nodes": [
+        nodes: [
           {"id": "Myriel", "group": 1},
           {"id": "Napoleon", "group": 1},
           {"id": "Mlle.Baptistine", "group": 1},
@@ -82,7 +89,7 @@ function App() {
           {"id": "Brujon", "group": 4},
           {"id": "Mme.Hucheloup", "group": 8}
         ],
-        "links": [
+        links: [
           {"source": "Napoleon", "target": "Myriel", "value": 1},
           {"source": "Mlle.Baptistine", "target": "Myriel", "value": 8},
           {"source": "Mme.Magloire", "target": "Myriel", "value": 10},
@@ -341,109 +348,193 @@ function App() {
       }
       
 
-    // Specify the dimensions of the chart.
-    const width = 928;
-    const height = 600;
-      
-    // Specify the color scale.
-    const color = d3.scaleOrdinal(d3.schemeTableau10);
-      
-    // The force simulation mutates links and nodes, so create a copy
-    // so that re-evaluating this cell produces the same result.
-    const links = data.links.map(d => ({...d}));
-    const nodes = data.nodes.map(d => ({...d}));
-    
-    // Create a simulation with several forces.
-    const simulation = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id))
-        .force("charge", d3.forceManyBody())
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .on("tick", ticked);
-    
-    // Create the SVG container.
-    const svg = d3.create("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto;");
-    
-    // Add a line for each link, and a circle for each node.
-    const link = svg.append("g")
-        .attr("stroke", "#999")
-        .attr("stroke-opacity", 0.6)
-        .selectAll()
-        .data(links)
-        .join("line")
-        .attr("stroke-width", d => Math.sqrt(d.value));
-    
-    const node = svg.append("g")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 1.5)
-        .selectAll()
-        .data(nodes)
-        .join("circle")
-        .attr("r", 5)
-        .attr("fill", d => color(d.group));
-    
-    node.append("title")
-        .text(d => d.id);
-    
-    // Add a drag behavior.
-    node.call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
-    
-    // Set the position attributes of links and nodes each time the simulation ticks.
-    function ticked() {
-        link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-    
-        node
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
-    }
-    
-    // Reheat the simulation when drag starts, and fix the subject position.
-    function dragstarted(event) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        event.subject.fx = event.subject.x;
-        event.subject.fy = event.subject.y;
-    }
-    
-    // Update the subject (dragged node) position during drag.
-    function dragged(event) {
-        event.subject.fx = event.x;
-        event.subject.fy = event.y;
-    }
-    
-    // Restore the target alpha so the simulation cools after dragging ends.
-    // Unfix the subject position now that it’s no longer being dragged.
-    function dragended(event) {
-        if (!event.active) simulation.alphaTarget(0);
-        event.subject.fx = null;
-        event.subject.fy = null;
-    }
-    
-    // When this cell is re-run, stop the previous simulation. (This doesn’t
-    // really matter since the target alpha is zero and the simulation will
-    // stop naturally, but it’s a good practice.)
-    // # This just doesn't work
-    // invalidation.then(() => simulation.stop());
+    // const [chartSVG, setChartSVG] = useState("")
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setChartSVG(svg.node().outerHTML)
+    //     }, 1000);
+    //     return () => {
+    //         clearInterval(interval)
+    //         // I think the sim just runs automatically, I just take the SVGs
+    //         simulation.stop()
+    //     };
+    // }, [])
 
-    const [chartSVG, setChartSVG] = useState("")
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setChartSVG(svg.node().outerHTML)
-        }, 1000);
-    }, [])
-
-    return <div dangerouslySetInnerHTML={{
-        __html: chartSVG
-    }}></div>
+    return <div className="panel-view" style={{backgroundImage: `url(${backgroundImage})`}}>
+        <div className="left-panel">
+            <div className="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Kota</th>
+                            <th colSpan={2}>Posisi Kota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.nodes.map((node) => (
+                                <tr className="text-center">
+                                <td className="text-start">{node.id}</td>
+                                <td>231</td>
+                                <td>-2913</td>
+                            </tr>
+                        ))}
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div className="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Kota</th>
+                            <th colSpan={2}>Posisi Kota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div className="control-panel">
+                <button className="control-button control-button-pause">
+                    <img src={pauseIcon} alt=""></img>
+                </button>
+                <button className="control-button control-button-prev">
+                    <img src={prevIcon} alt=""></img>
+                </button>
+                <button className="control-button control-button-next">
+                    <img src={nextIcon} alt=""></img>
+                </button>
+                <button className="control-button control-button-watch">
+                    <img src={watchIcon} alt=""></img>
+                </button>
+                <button className="control-button control-button-run">
+                    <img src={runIcon} alt=""></img>
+                </button>
+            </div>
+        </div>
+        <div className="right-panel">
+            <ForceGraph2D
+                width={window.innerWidth}
+                height={window.innerHeight}
+                graphData={data}
+            />
+        </div>
+    </div>
 } 
 
 export default App;
+
+function Chart({data}) {
+    const chart = useRef(null);
+    useEffect(() => {
+        console.log(chart, data, "OUT")
+        if (data && chart.current) {
+            console.log(chart, data, "IN")
+            // Specify the dimensions of the chart.
+            const width = 800;
+            const height = 580;
+            
+            // Specify the color scale.
+            const color = d3.scaleOrdinal(d3.schemeTableau10);
+            
+            // The force simulation mutates links and nodes, so create a copy
+            // so that re-evaluating this cell produces the same result.
+            const links = data.links.map(d => ({...d}));
+            const nodes = data.nodes.map(d => ({...d}));
+            
+            // Create a simulation with several forces.
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id))
+                .force("charge", d3.forceManyBody())
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .on("tick", ticked);
+            
+            // Create the SVG container.
+            const svg = d3.create("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("viewBox", [0, 0, width, height])
+                .attr("style", "max-width: 100%; height: auto;")
+                .attr("ref", chart);
+            
+            // Add a line for each link, and a circle for each node.
+            const link = svg.append("g")
+                .attr("stroke", "#999")
+                .attr("stroke-opacity", 0.6)
+                .selectAll()
+                .data(links)
+                .join("line")
+                .attr("stroke-width", d => Math.sqrt(d.value));
+            
+            const node = svg.append("g")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1.5)
+                .selectAll()
+                .data(nodes)
+                .join("circle")
+                .attr("r", 5)
+                .attr("fill", d => color(d.group));
+            
+            node.append("title")
+                .text(d => d.id);
+
+            // Set the position attributes of links and nodes each time the simulation ticks.
+            function ticked() {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+            
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            }
+            
+            // Reheat the simulation when drag starts, and fix the subject position.
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+            
+            // Update the subject (dragged node) position during drag.
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+            
+            // Restore the target alpha so the simulation cools after dragging ends.
+            // Unfix the subject position now that it’s no longer being dragged.
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+
+            // Add a drag behavior.
+            node.call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+            
+            // When this cell is re-run, stop the previous simulation. (This doesn’t
+            // really matter since the target alpha is zero and the simulation will
+            // stop naturally, but it’s a good practice.)
+            // # This just doesn't work
+            // invalidation.then(() => simulation.stop());
+        }
+
+    }, [data, chart.current])
+
+    return (
+        <div>
+            <svg
+                className="d3-component"
+                ref={chart}
+            >
+            </svg>
+        </div>
+    )
+}
