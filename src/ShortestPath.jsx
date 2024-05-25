@@ -352,9 +352,10 @@ function App() {
     const [path, setPath] = useState([])
     const [visited, setVisited] = useState([])
     const [options, setOptions] = useState([])
+    const [length, setLength] = useState(0)
 
     const [threshold, setThreshold] = useState(3)
-    const [speed, setSpeed] = useState(10)
+    const [speed, setSpeed] = useState(100)
     const [recencyWeight, setRecencyWeight] = useState(1)
     const [elevationWeight, setElevationWeight] = useState(2)
 
@@ -459,24 +460,29 @@ function App() {
                 }
             }
         }
-
+        setStep((e) => count)
+        setLength((e) => 0)
 
         setOptions((e) => options)
         setVisited((e) => visited)
+        setPath((e) => [])
 
         if(visited[start[0]][start[1]]) {
             pauseRender()
             const optimalPath = heightMap.map((e) => e.map((f) => false))
             var currentCell = [start[0], start[1]]
+            var length = 0
             optimalPath[start[0]][start[1]] = true
             while (currentCell[0] != end[0] || currentCell[1] != end[1]) {
                 let bestPath = paths.filter((e) => e[1][0] == currentCell[0] && e[1][1] == currentCell[1])
                 currentCell = [bestPath[0][0][0], bestPath[0][0][1]]
                 optimalPath[currentCell[0]][currentCell[1]] = true
+                length += 1
             }
             setOptions((e) => [])
             setVisited((e) => [])
             setPath((e) => optimalPath)
+            setLength((e) => length)
         }
     }
 
@@ -507,7 +513,6 @@ function App() {
     }
 
     useEffect(() => {
-        console.log(heightMap)
         if (heightMap && heightMap.length) {
             setAspectRatio((e) => heightMap[0].length + " / " + heightMap.length)
             pauseRender("reset")
@@ -521,6 +526,8 @@ function App() {
     useEffect(() => {
         return () => clearInterval(timer)
     }, []);
+
+//<input className="heightmap-text" type="button" onClick={() => setStart((e) => [rowIndex, colIndex])} onContextMenu={() => setEnd((e) => [rowIndex, colIndex])}/>
 
     return <div className="panel-view" style={{backgroundImage: `url(${backgroundImage})`}}>
         <div className="left-panel">
@@ -539,20 +546,24 @@ function App() {
                                 </td>
                             </tr>
                             <tr>
-                                <td>Threshold</td>
-                                <td><input id="threshold" type="number" value={threshold} onChange={(e) => setThreshold((f) => e.target.value)}/></td>
+                                <td>Length</td>
+                                <td>{length == 0 ? "Unknown" : length}</td>
+                            </tr>
+                            <tr>
+                                <td>Threshold Height</td>
+                                <td><input id="threshold" type="number" value={threshold} onChange={(e) => {setThreshold((f) => e.target.value) ; solve()}}/>dm</td>
                             </tr>
                             <tr>
                                 <td>Speed</td>
-                                <td><input id="speed" type="number" value={speed} onChange={(e) => setSpeed((f) => e.target.value)}/></td>
+                                <td><input id="speed" type="number" value={speed} onChange={(e) => {setSpeed((f) => e.target.value) ; solve()}}/></td>
                             </tr>
                             <tr>
                                 <td>Recency Weight</td>
-                                <td><input id="recency-weight" type="number" value={recencyWeight} onChange={(e) => setRecencyWeight((f) => e.target.value)}/></td>
+                                <td><input id="recency-weight" type="number" value={recencyWeight} onChange={(e) => {setRecencyWeight((f) => e.target.value) ; solve()}}/></td>
                             </tr>
                             <tr>
                                 <td>Elevation Weight</td>
-                                <td><input id="elevation-weight" type="number" value={elevationWeight} onChange={(e) => setElevationWeight((f) => e.target.value)}/></td>
+                                <td><input id="elevation-weight" type="number" value={elevationWeight} onChange={(e) => {setElevationWeight((f) => e.target.value) ; solve()}}/></td>
                             </tr>
                             
                         </tbody>
@@ -574,9 +585,9 @@ function App() {
                 </button>
                 <button className="control-button control-button-run" onClick={() => {
                     setTimer((e) => setInterval(() => {
-                        setStep((e) => e + 1)
+                        setStep((e) => e + speed)
                         setTrigger((e) => e + 1)
-                    }, speed))
+                    }, 100))
                 }}>
                     <img src={runIcon} alt=""></img>
                 </button>

@@ -30,7 +30,7 @@
 }
 
 .heightmap-bandaid {
-    @apply flex-grow m-auto
+    @apply flex-grow m-auto 
 }
 
 .heightmap-row {
@@ -38,11 +38,11 @@
 }
 
 .heightmap-cell {
-    @apply aspect-square 
+    @apply aspect-square max-w-min max-h-min
 }
 
 .heightmap-text {
-    @apply w-full h-full
+    @apply w-full h-full max-w-min max-h-min aspect-square 
 }
 
 .data-table {
