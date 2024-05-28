@@ -14,47 +14,53 @@
 }
 
 .panel-view {
-    @apply flex flex-row gap-3 p-8 w-screen max-h-screen h-screen bg-repeat
+    @apply flex flex-row gap-3 p-8 w-screen max-h-screen h-screen bg-repeat overflow-hidden
 }
 
 .left-panel {   
-    @apply basis-1/5 flex flex-col
+    @apply basis-1/5 flex flex-col gap-3
 }
 
 .right-panel {
-    @apply basis-4/5 bg-slate-50 rounded max-h-full max-w-full flex
+    @apply basis-5/6 bg-slate-50 rounded max-h-full flex overflow-auto p-1
 }
 
 .heightmap {
-    @apply grid grid-flow-row bg-slate-800 max-w-full max-h-screen mx-auto
-}
-
-.heightmap-bandaid {
-    @apply flex-grow m-auto 
+    @apply grid grid-flow-row bg-slate-800 max-w-full max-h-full mx-auto
 }
 
 .heightmap-row {
-    @apply grid grid-flow-col max-w-full
+    @apply grid grid-flow-col max-w-min mx-auto
 }
 
 .heightmap-cell {
-    @apply aspect-square max-w-min max-h-min
+    font-size: 10px;
+    @apply min-w-min min-h-min aspect-square 
 }
 
 .heightmap-text {
-    @apply w-full h-full max-w-min max-h-min aspect-square 
+    @apply aspect-square size-full
 }
 
 .data-table {
-    @apply basis-10/12 overflow-y-scroll bg-slate-50 rounded no-scrollbar m-auto
+    @apply overflow-y-scroll bg-slate-50 rounded no-scrollbar m-auto flex-grow
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {  
+    @apply opacity-100
+}
+
+.data-input {
+    @apply ps-2 bg-slate-50 border-2 border-slate-300 
 }
 
 .control-panel {
-    @apply basis-1/12 flex flex-row gap-1.5 bg-slate-50 rounded p-1.5
+    @apply flex flex-row gap-1.5 bg-slate-50 rounded p-1.5 m-auto
 }
 
 .control-button {
-    @apply basis-1/5 bg-slate-800 rounded-sm p-1.5
+    @apply bg-slate-800 rounded-sm p-1.5 aspect-square tooltip
 }
 
 .data-table table {
@@ -66,5 +72,17 @@
 }
 
 .data-table th, .data-table td {
-    @apply px-2 py-1 
+    @apply px-2 py-1 tooltip
+}
+
+.tooltip {
+    @apply relative
+}
+
+.tooltip .tooltiptext {
+    @apply bg-slate-200 absolute bottom-full z-10 w-max px-2 py-1 invisible rounded-sm border-2 border-slate-700
+}
+
+.tooltip:hover .tooltiptext {
+    @apply visible
 }
