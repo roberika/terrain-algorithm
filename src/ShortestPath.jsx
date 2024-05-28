@@ -287,7 +287,7 @@ function App() {
                             </tr>
                             <tr>
                                 <td colSpan={2}>
-                                    <a href="" className="text-blue-900 font-bold underline">Download data test</a>
+                                    <a href="https://github.com/roberika/terrain-algorithm/tree/main/src/test-maps" rel="noopener noreferrer" target="_blank" className="text-blue-900 font-bold underline">Download data test</a>
                                 </td>
                             </tr>
                         </tbody>
